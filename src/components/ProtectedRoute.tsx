@@ -30,6 +30,13 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     }
   }
 
+  // Special handling for /timesheet route - only workers and foremen can access
+  if (location.pathname === '/timesheet') {
+    if (!profile?.role || !['worker', 'foreman'].includes(profile.role)) {
+      return <Navigate to="/dashboard" replace />;
+    }
+  }
+
   if (requiredRole && profile?.role !== requiredRole) {
     return <Navigate to="/dashboard" replace />;
   }

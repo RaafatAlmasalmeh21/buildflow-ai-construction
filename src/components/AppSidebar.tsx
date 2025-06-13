@@ -9,7 +9,8 @@ import {
   Users,
   Wrench,
   ClipboardList,
-  Home
+  Home,
+  Clock
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -56,6 +57,12 @@ const menuItems = [
     title: "My Tasks",
     url: "/tasks/my",
     icon: ClipboardList,
+    roles: ['worker', 'foreman']
+  },
+  {
+    title: "Timesheet",
+    url: "/timesheet",
+    icon: Clock,
     roles: ['worker', 'foreman']
   },
   {

@@ -19,6 +19,7 @@ import Sites from '@/pages/Sites';
 import SiteDetail from '@/pages/SiteDetail';
 import Tasks from '@/pages/Tasks';
 import MyTasks from '@/pages/MyTasks';
+import Timesheet from '@/pages/Timesheet';
 import Workforce from '@/pages/Workforce';
 import Equipment from '@/pages/Equipment';
 import Reports from '@/pages/Reports';
@@ -135,6 +136,19 @@ function App() {
                     <AppSidebar />
                     <main className="flex-1">
                       <MyTasks />
+                    </main>
+                  </SidebarProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/timesheet"
+              element={
+                <ProtectedRoute>
+                  <SidebarProvider>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Timesheet />
                     </main>
                   </SidebarProvider>
                 </ProtectedRoute>
