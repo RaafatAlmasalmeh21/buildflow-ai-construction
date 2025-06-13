@@ -10,7 +10,8 @@ import {
   ClipboardList,
   Home,
   Clock,
-  CheckSquare
+  CheckSquare,
+  AlertTriangle
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -94,6 +95,18 @@ const menuItems = [
     url: "/settings",
     icon: Settings,
     roles: ['admin']
+  },
+  {
+    title: "Report Incident",
+    url: "/incidents/new",
+    icon: AlertTriangle,
+    roles: ['worker', 'foreman']
+  },
+  {
+    title: "My Incidents",
+    url: "/incidents/mine",
+    icon: AlertTriangle,
+    roles: ['worker', 'foreman']
   },
 ];
 

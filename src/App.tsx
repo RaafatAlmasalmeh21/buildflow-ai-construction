@@ -25,6 +25,8 @@ import Reports from '@/pages/Reports';
 import Settings from '@/pages/Settings';
 import NotFound from '@/pages/NotFound';
 import TodaysTasks from '@/pages/TodaysTasks';
+import NewIncident from '@/pages/NewIncident';
+import MyIncidents from '@/pages/MyIncidents';
 
 import './App.css';
 
@@ -214,6 +216,32 @@ function App() {
                     <AppSidebar />
                     <main className="flex-1">
                       <Settings />
+                    </main>
+                  </SidebarProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/incidents/new"
+              element={
+                <ProtectedRoute>
+                  <SidebarProvider>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <NewIncident />
+                    </main>
+                  </SidebarProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/incidents/mine"
+              element={
+                <ProtectedRoute>
+                  <SidebarProvider>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <MyIncidents />
                     </main>
                   </SidebarProvider>
                 </ProtectedRoute>
