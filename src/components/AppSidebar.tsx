@@ -49,7 +49,13 @@ const menuItems = [
     title: "Tasks",
     url: "/tasks",
     icon: ClipboardList,
-    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman', 'worker']
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman']
+  },
+  {
+    title: "My Tasks",
+    url: "/tasks/my",
+    icon: ClipboardList,
+    roles: ['worker', 'foreman']
   },
   {
     title: "Workforce",
@@ -78,10 +84,10 @@ const menuItems = [
 ];
 
 export function AppSidebar() {
-  const { user } = useAuth();
+  const { profile } = useAuth();
 
   const filteredItems = menuItems.filter(item => 
-    user && item.roles.includes(user.role)
+    profile && item.roles.includes(profile.role)
   );
 
   return (

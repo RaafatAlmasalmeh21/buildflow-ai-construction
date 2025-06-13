@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -17,6 +18,7 @@ import ProjectDetail from '@/pages/ProjectDetail';
 import Sites from '@/pages/Sites';
 import SiteDetail from '@/pages/SiteDetail';
 import Tasks from '@/pages/Tasks';
+import MyTasks from '@/pages/MyTasks';
 import Workforce from '@/pages/Workforce';
 import Equipment from '@/pages/Equipment';
 import Reports from '@/pages/Reports';
@@ -120,6 +122,19 @@ function App() {
                     <AppSidebar />
                     <main className="flex-1">
                       <Tasks />
+                    </main>
+                  </SidebarProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/my"
+              element={
+                <ProtectedRoute>
+                  <SidebarProvider>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <MyTasks />
                     </main>
                   </SidebarProvider>
                 </ProtectedRoute>
