@@ -1,3 +1,4 @@
+
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,7 +27,7 @@ const TodaysTasks = () => {
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['todays-tasks', user?.id],
     queryFn: async () => {
-      if (!user?.id) return [];
+      if (!user?.id) return [] as TodayTask[];
       
       const today = new Date().toISOString().split('T')[0];
       
