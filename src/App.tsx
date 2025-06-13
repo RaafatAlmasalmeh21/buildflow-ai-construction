@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
@@ -25,6 +24,7 @@ import Equipment from '@/pages/Equipment';
 import Reports from '@/pages/Reports';
 import Settings from '@/pages/Settings';
 import NotFound from '@/pages/NotFound';
+import TodaysTasks from '@/pages/TodaysTasks';
 
 import './App.css';
 
@@ -136,6 +136,19 @@ function App() {
                     <AppSidebar />
                     <main className="flex-1">
                       <MyTasks />
+                    </main>
+                  </SidebarProvider>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tasks/today"
+              element={
+                <ProtectedRoute>
+                  <SidebarProvider>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <TodaysTasks />
                     </main>
                   </SidebarProvider>
                 </ProtectedRoute>

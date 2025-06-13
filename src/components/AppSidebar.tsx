@@ -1,4 +1,3 @@
-
 import {
   BarChart3,
   Building2,
@@ -10,7 +9,8 @@ import {
   Wrench,
   ClipboardList,
   Home,
-  Clock
+  Clock,
+  CheckSquare
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -57,6 +57,12 @@ const menuItems = [
     title: "My Tasks",
     url: "/tasks/my",
     icon: ClipboardList,
+    roles: ['worker', 'foreman']
+  },
+  {
+    title: "Today's Tasks",
+    url: "/tasks/today",
+    icon: CheckSquare,
     roles: ['worker', 'foreman']
   },
   {

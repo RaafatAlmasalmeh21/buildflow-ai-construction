@@ -23,15 +23,9 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/login" replace />;
   }
 
-  // Special handling for /tasks/my route - only workers and foremen can access
-  if (location.pathname === '/tasks/my') {
-    if (!profile?.role || !['worker', 'foreman'].includes(profile.role)) {
-      return <Navigate to="/dashboard" replace />;
-    }
-  }
-
-  // Special handling for /timesheet route - only workers and foremen can access
-  if (location.pathname === '/timesheet') {
+  // Special handling for worker/foreman only routes
+  const workerForemenRoutes = ['/tasks/my', '/timesheet', '/tasks/today'];
+  if (workerForemenRoutes.includes(location.pathname)) {
     if (!profile?.role || !['worker', 'foreman'].includes(profile.role)) {
       return <Navigate to="/dashboard" replace />;
     }
