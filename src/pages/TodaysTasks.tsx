@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 interface TodayTask {
   id: string;
   name: string;
-  status: string;
+  status: 'not_started' | 'in_progress' | 'completed' | 'on_hold' | 'cancelled';
   planned_hours: number;
   actual_hours: number;
   sites: {
@@ -26,7 +26,7 @@ const TodaysTasks = () => {
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['todays-tasks', user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<TodayTask[]> => {
       if (!user?.id) return [];
       
       const today = new Date().toISOString().split('T')[0];
@@ -50,20 +50,20 @@ const TodaysTasks = () => {
         throw error;
       }
 
-      return data as TodayTask[] || [];
+      return (data || []) as TodayTask[];
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes for offline-first experience
-    cacheTime: 1000 * 60 * 30, // Keep in cache for 30 minutes
+    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes (renamed from cacheTime)
   });
 
   const updateTaskMutation = useMutation({
-    mutationFn: async ({ taskId, status }: { taskId: string; status: string }) => {
+    mutationFn: async ({ taskId, status }: { taskId: string; status: 'not_started' | 'in_progress' | 'completed' | 'on_hold' | 'cancelled' }) => {
       const { error } = await supabase
         .from('tasks')
         .update({ 
           status,
-          ...(status === 'done' && { actual_hours: tasks.find(t => t.id === taskId)?.planned_hours || 0 })
+          ...(status === 'completed' && { actual_hours: tasks.find(t => t.id === taskId)?.planned_hours || 0 })
         })
         .eq('id', taskId);
 
@@ -80,11 +80,11 @@ const TodaysTasks = () => {
   });
 
   const handleTaskToggle = (taskId: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'done' ? 'in_progress' : 'done';
+    const newStatus: 'completed' | 'in_progress' = currentStatus === 'completed' ? 'in_progress' : 'completed';
     updateTaskMutation.mutate({ taskId, status: newStatus });
   };
 
-  const completedTasks = tasks.filter(task => task.status === 'done').length;
+  const completedTasks = tasks.filter(task => task.status === 'completed').length;
   const progressPercentage = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
 
   if (isLoading) {
@@ -152,19 +152,19 @@ const TodaysTasks = () => {
                 <div 
                   key={task.id} 
                   className={`flex items-center gap-4 p-4 border rounded-lg transition-colors ${
-                    task.status === 'done' 
+                    task.status === 'completed' 
                       ? 'bg-green-50 border-green-200' 
                       : 'bg-white border-gray-200 hover:bg-gray-50'
                   }`}
                 >
                   <Checkbox
-                    checked={task.status === 'done'}
+                    checked={task.status === 'completed'}
                     onCheckedChange={() => handleTaskToggle(task.id, task.status)}
                     disabled={updateTaskMutation.isPending}
                   />
                   
                   <div className="flex-1">
-                    <h3 className={`font-medium ${task.status === 'done' ? 'line-through text-muted-foreground' : ''}`}>
+                    <h3 className={`font-medium ${task.status === 'completed' ? 'line-through text-muted-foreground' : ''}`}>
                       {task.name}
                     </h3>
                     <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
@@ -181,9 +181,9 @@ const TodaysTasks = () => {
 
                   <div className="text-right">
                     <div className={`text-sm font-medium ${
-                      task.status === 'done' ? 'text-green-600' : 'text-orange-600'
+                      task.status === 'completed' ? 'text-green-600' : 'text-orange-600'
                     }`}>
-                      {task.status === 'done' ? 'Completed' : 'Pending'}
+                      {task.status === 'completed' ? 'Completed' : 'Pending'}
                     </div>
                   </div>
                 </div>
