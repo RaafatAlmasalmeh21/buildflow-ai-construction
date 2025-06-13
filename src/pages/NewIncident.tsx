@@ -114,11 +114,11 @@ const NewIncident = () => {
     setIsSubmitting(true);
 
     try {
-      let mediaUrl = null;
+      let attachmentUrl = null;
 
       // Upload file if selected
       if (selectedFile) {
-        mediaUrl = await uploadFile(selectedFile);
+        attachmentUrl = await uploadFile(selectedFile);
       }
 
       // Insert incident record
@@ -128,9 +128,9 @@ const NewIncident = () => {
           title: data.title,
           severity: data.severity,
           description: data.description,
-          media_url: mediaUrl,
-          reporter_id: user.id,
-          status: 'open',
+          attachment_url: attachmentUrl,
+          reported_by: user.id,
+          incident_date: new Date().toISOString(),
         })
         .select()
         .single();

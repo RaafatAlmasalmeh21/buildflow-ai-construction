@@ -13,19 +13,19 @@ interface Incident {
   id: string;
   title: string;
   severity: 'low' | 'medium' | 'high';
-  status: 'open' | 'investigating' | 'resolved' | 'closed';
   description: string;
-  media_url: string | null;
+  attachment_url: string | null;
   created_at: string;
   updated_at: string;
 }
 
-const fetchMyIncidents = async (userId: string): Promise<Incident[]> => {
+const fetchMyIncidents = async (userId: string) => {
   const { data, error } = await supabase
     .from('incidents')
-    .select('*')
-    .eq('reporter_id', userId)
-    .order('created_at', { ascending: false });
+    .select('id, title, severity, description, attachment_url, created_at, updated_at')
+    .eq('reported_by', userId)
+    .order('created_at', { ascending: false })
+    .returns<Incident[]>();
 
   if (error) {
     console.error('Error fetching incidents:', error);
@@ -43,21 +43,6 @@ const getSeverityColor = (severity: string) => {
       return 'bg-orange-100 text-orange-800 border-orange-200';
     case 'low':
       return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200';
-  }
-};
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'open':
-      return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'investigating':
-      return 'bg-purple-100 text-purple-800 border-purple-200';
-    case 'resolved':
-      return 'bg-green-100 text-green-800 border-green-200';
-    case 'closed':
-      return 'bg-gray-100 text-gray-800 border-gray-200';
     default:
       return 'bg-gray-100 text-gray-800 border-gray-200';
   }
@@ -109,7 +94,7 @@ const MyIncidents = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Reports</CardTitle>
@@ -121,33 +106,24 @@ const MyIncidents = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Open</CardTitle>
+            <CardTitle className="text-sm font-medium">High Severity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">
+              {incidents.filter(i => i.severity === 'high').length}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium">This Month</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">
-              {incidents.filter(i => i.status === 'open').length}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Investigating</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">
-              {incidents.filter(i => i.status === 'investigating').length}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Resolved</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {incidents.filter(i => i.status === 'resolved').length}
+              {incidents.filter(i => 
+                new Date(i.created_at).getMonth() === new Date().getMonth()
+              ).length}
             </div>
           </CardContent>
         </Card>
@@ -183,14 +159,9 @@ const MyIncidents = () => {
                 >
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium">{incident.title}</h3>
-                    <div className="flex gap-2">
-                      <Badge variant="outline" className={getSeverityColor(incident.severity)}>
-                        {incident.severity.toUpperCase()}
-                      </Badge>
-                      <Badge variant="outline" className={getStatusColor(incident.status)}>
-                        {incident.status.toUpperCase()}
-                      </Badge>
-                    </div>
+                    <Badge variant="outline" className={getSeverityColor(incident.severity)}>
+                      {incident.severity.toUpperCase()}
+                    </Badge>
                   </div>
                   
                   <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -204,7 +175,7 @@ const MyIncidents = () => {
                         Reported {new Date(incident.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                    {incident.media_url && (
+                    {incident.attachment_url && (
                       <span className="text-blue-600">Has media attachment</span>
                     )}
                   </div>
