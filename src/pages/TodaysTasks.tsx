@@ -19,19 +19,12 @@ interface TodayTask {
   } | null;
 }
 
-const fetchTodaysTasks = async (userId: string): Promise<TodayTask[]> => {
+const fetchTodaysTasks = async (userId: string) => {
   const today = new Date().toISOString().split('T')[0];
   
   const { data, error } = await supabase
     .from('tasks')
-    .select(`
-      id,
-      name,
-      status,
-      planned_hours,
-      actual_hours,
-      sites(name)
-    `)
+    .select('id, name, status, planned_hours, actual_hours, sites(name)')
     .eq('assignee_id', userId)
     .eq('planned_date', today)
     .order('created_at', { ascending: true });
@@ -43,14 +36,16 @@ const fetchTodaysTasks = async (userId: string): Promise<TodayTask[]> => {
 
   if (!data) return [];
 
-  return data.map(task => ({
+  const tasks: TodayTask[] = data.map((task: any) => ({
     id: task.id,
     name: task.name,
-    status: task.status as TodayTask['status'],
+    status: task.status,
     planned_hours: task.planned_hours || 0,
     actual_hours: task.actual_hours || 0,
     sites: task.sites
   }));
+
+  return tasks;
 };
 
 const TodaysTasks = () => {
