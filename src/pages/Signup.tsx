@@ -31,10 +31,16 @@ const Signup = () => {
   }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
+    
+    // Clear errors when user starts typing
+    if (error) {
+      setError('');
+    }
   };
 
   const isAdminEmail = (email: string) => {
@@ -42,12 +48,34 @@ const Signup = () => {
     return adminEmails.includes(email.toLowerCase());
   };
 
+  const validateEmail = (email: string) => {
+    // Custom email validation that handles our admin emails
+    if (!email) return 'Email is required';
+    
+    // Check if it's one of our admin emails (which we know are valid)
+    if (isAdminEmail(email)) return '';
+    
+    // For other emails, use a simple regex validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    
+    return '';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Validation
+    // Custom validation
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -55,11 +83,6 @@ const Signup = () => {
 
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
-      return;
-    }
-
-    if (!formData.email || !formData.password) {
-      setError('Email and password are required');
       return;
     }
 
@@ -187,12 +210,13 @@ const Signup = () => {
                 <Input
                   id="email"
                   name="email"
-                  type="email"
+                  type="text"
                   value={formData.email}
                   onChange={handleChange}
                   required
                   disabled={isSubmitting}
                   placeholder="john@example.com"
+                  autoComplete="email"
                 />
                 {formData.email && isAdminEmail(formData.email) && (
                   <p className="text-sm text-green-600 mt-1 flex items-center gap-1">
