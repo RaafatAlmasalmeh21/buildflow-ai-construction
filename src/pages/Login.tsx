@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { HardHat, Loader2, Shield, User } from 'lucide-react';
+import { HardHat, Loader2, Shield, User, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
@@ -25,6 +25,8 @@ const Login = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    console.log('Login attempt for:', email);
+
     try {
       await login(email, password);
       toast({
@@ -32,10 +34,20 @@ const Login = () => {
         description: "You have successfully logged in.",
       });
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Login error details:', error);
+      
+      let errorMessage = "Please check your credentials and try again.";
+      
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = "Invalid email or password. Make sure you've signed up first!";
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = "Please check your email and confirm your account before signing in.";
+      }
+      
       toast({
         title: "Login Failed",
-        description: "Please check your credentials and try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -124,11 +136,20 @@ const Login = () => {
         <Card className="border-orange-200 bg-orange-50">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2 text-orange-800">
-              <Shield className="h-4 w-4" />
-              Demo Accounts
+              <AlertTriangle className="h-4 w-4" />
+              Demo Accounts - Sign Up Required
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
+            <div className="mb-3 p-3 bg-orange-100 rounded-md">
+              <p className="text-xs text-orange-800 font-medium mb-1">
+                ⚠️ Important: Demo accounts must be created first!
+              </p>
+              <p className="text-xs text-orange-700">
+                Before logging in, you need to sign up with these demo emails.
+              </p>
+            </div>
+            
             <div className="space-y-2">
               <Button
                 variant="outline"
@@ -157,9 +178,15 @@ const Login = () => {
               </Button>
             </div>
             
-            <p className="text-xs text-orange-700">
-              Password for all demo accounts: <code className="bg-orange-100 px-1 rounded">demo123</code>
-            </p>
+            <div className="text-xs text-orange-700 space-y-1">
+              <p>Password: <code className="bg-orange-100 px-1 rounded">demo123</code></p>
+              <p className="font-medium">Steps to use demo accounts:</p>
+              <ol className="list-decimal list-inside space-y-1 ml-2">
+                <li>Click "Sign up here" above</li>
+                <li>Create account with demo email</li>
+                <li>Return here to sign in</li>
+              </ol>
+            </div>
           </CardContent>
         </Card>
       </div>
