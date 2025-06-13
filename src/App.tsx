@@ -1,50 +1,60 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Projects from "./pages/Projects";
-import ProjectDetail from "./pages/ProjectDetail";
-import Sites from "./pages/Sites";
-import SiteDetail from "./pages/SiteDetail";
-import Tasks from "./pages/Tasks";
-import Workforce from "./pages/Workforce";
-import Equipment from "./pages/Equipment";
-import Reports from "./pages/Reports";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
-import { AppSidebar } from "./components/AppSidebar";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AuthProvider } from "./contexts/AuthContext";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { Toaster } from '@/components/ui/sonner';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import AppSidebar from '@/components/AppSidebar';
 
-const queryClient = new QueryClient();
+// Import pages
+import Index from '@/pages/Index';
+import Login from '@/pages/Login';
+import Auth from '@/pages/Auth';
+import Dashboard from '@/pages/Dashboard';
+import Projects from '@/pages/Projects';
+import ProjectDetail from '@/pages/ProjectDetail';
+import Sites from '@/pages/Sites';
+import SiteDetail from '@/pages/SiteDetail';
+import Tasks from '@/pages/Tasks';
+import Workforce from '@/pages/Workforce';
+import Equipment from '@/pages/Equipment';
+import Reports from '@/pages/Reports';
+import Settings from '@/pages/Settings';
+import NotFound from '@/pages/NotFound';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+import './App.css';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Router>
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/auth" element={<Auth />} />
+            
+            {/* Protected routes with sidebar */}
             <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Dashboard />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Dashboard />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -54,12 +64,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Projects />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Projects />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -69,12 +77,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <ProjectDetail />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <ProjectDetail />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -84,12 +90,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Sites />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Sites />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -99,12 +103,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <SiteDetail />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <SiteDetail />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -114,12 +116,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Tasks />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Tasks />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -129,12 +129,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Workforce />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Workforce />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -144,12 +142,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Equipment />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Equipment />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -159,12 +155,10 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Reports />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Reports />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
@@ -174,22 +168,23 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SidebarProvider>
-                    <div className="min-h-screen flex w-full">
-                      <AppSidebar />
-                      <main className="flex-1">
-                        <Settings />
-                      </main>
-                    </div>
+                    <AppSidebar />
+                    <main className="flex-1">
+                      <Settings />
+                    </main>
                   </SidebarProvider>
                 </ProtectedRoute>
               }
             />
+            
+            {/* 404 route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+          <Toaster />
+        </Router>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
