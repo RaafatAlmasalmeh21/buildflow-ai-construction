@@ -1,4 +1,3 @@
-
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,8 +25,8 @@ const TodaysTasks = () => {
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['todays-tasks', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [] as TodayTask[];
+    queryFn: async (): Promise<TodayTask[]> => {
+      if (!user?.id) return [];
       
       const today = new Date().toISOString().split('T')[0];
       
@@ -50,11 +49,18 @@ const TodaysTasks = () => {
         throw error;
       }
 
-      return (data || []) as TodayTask[];
+      return data?.map(task => ({
+        id: task.id,
+        name: task.name,
+        status: task.status as TodayTask['status'],
+        planned_hours: task.planned_hours || 0,
+        actual_hours: task.actual_hours || 0,
+        sites: task.sites
+      })) || [];
     },
     enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes for offline-first experience
-    gcTime: 1000 * 60 * 30, // Keep in cache for 30 minutes (renamed from cacheTime)
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 
   const updateTaskMutation = useMutation({
