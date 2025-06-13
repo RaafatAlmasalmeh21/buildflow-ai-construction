@@ -85,7 +85,7 @@ const TodaysTasks = () => {
     enabled: !!user?.id,
   });
 
-  const updateTaskStatus = async (taskId: string, newStatus: string) => {
+  const updateTaskStatus = async (taskId: string, newStatus: 'not_started' | 'in_progress' | 'completed' | 'on_hold') => {
     try {
       const { error } = await supabase
         .from('tasks')
