@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -99,6 +98,19 @@ const Login = () => {
               )}
             </Button>
           </form>
+          
+          <div className="mt-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              Don't have an account?{' '}
+              <Link
+                to="/signup"
+                className="text-primary hover:text-primary/80 font-medium"
+              >
+                Sign up here
+              </Link>
+            </p>
+          </div>
+          
           <div className="mt-6 text-center text-sm text-muted-foreground">
             <p>Demo Credentials:</p>
             <p>Email: admin@buildpro.com</p>

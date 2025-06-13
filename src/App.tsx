@@ -9,6 +9,7 @@ import { AppSidebar } from '@/components/AppSidebar';
 // Import pages
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
+import Signup from '@/pages/Signup';
 import Auth from '@/pages/Auth';
 import Dashboard from '@/pages/Dashboard';
 import Projects from '@/pages/Projects';
@@ -42,6 +43,7 @@ function App() {
             {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/auth" element={<Auth />} />
             
             {/* Protected routes with sidebar */}

@@ -60,10 +60,10 @@ const Index = () => {
               <span className="text-2xl font-bold text-gray-900">BuildPro</span>
             </div>
             <div className="flex items-center gap-4">
-              <Link to="/auth">
+              <Link to="/login">
                 <Button variant="outline">Sign In</Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/signup">
                 <Button>Get Started</Button>
               </Link>
             </div>
@@ -83,7 +83,7 @@ const Index = () => {
             workforce tracking, and real-time reporting. Built for modern construction teams.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth">
+            <Link to="/signup">
               <Button size="lg" className="w-full sm:w-auto">
                 Start Free Trial
               </Button>
@@ -134,7 +134,7 @@ const Index = () => {
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join thousands of construction professionals who trust BuildPro to manage their projects efficiently.
           </p>
-          <Link to="/auth">
+          <Link to="/signup">
             <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-gray-50">
               Get Started Today
             </Button>
