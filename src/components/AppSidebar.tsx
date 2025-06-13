@@ -1,0 +1,119 @@
+
+import {
+  BarChart3,
+  Building2,
+  Calendar,
+  HardHat,
+  MapPin,
+  Settings,
+  Users,
+  Wrench,
+  ClipboardList,
+  Home
+} from "lucide-react";
+
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
+
+const menuItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman', 'worker', 'client']
+  },
+  {
+    title: "Projects",
+    url: "/projects",
+    icon: Building2,
+    roles: ['admin', 'project_manager', 'site_supervisor', 'client']
+  },
+  {
+    title: "Sites",
+    url: "/sites",
+    icon: MapPin,
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman']
+  },
+  {
+    title: "Tasks",
+    url: "/tasks",
+    icon: ClipboardList,
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman', 'worker']
+  },
+  {
+    title: "Workforce",
+    url: "/workforce",
+    icon: Users,
+    roles: ['admin', 'project_manager', 'site_supervisor']
+  },
+  {
+    title: "Equipment",
+    url: "/equipment",
+    icon: Wrench,
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman']
+  },
+  {
+    title: "Reports",
+    url: "/reports",
+    icon: BarChart3,
+    roles: ['admin', 'project_manager', 'client']
+  },
+  {
+    title: "Settings",
+    url: "/settings",
+    icon: Settings,
+    roles: ['admin']
+  },
+];
+
+export function AppSidebar() {
+  const { user } = useAuth();
+
+  const filteredItems = menuItems.filter(item => 
+    user && item.roles.includes(user.role)
+  );
+
+  return (
+    <Sidebar>
+      <SidebarHeader className="border-b border-sidebar-border">
+        <div className="flex items-center gap-2 px-4 py-2">
+          <HardHat className="h-8 w-8 text-sidebar-primary" />
+          <div>
+            <h1 className="text-lg font-bold text-sidebar-foreground">BuildPro</h1>
+            <p className="text-xs text-sidebar-foreground/70">Construction Management</p>
+          </div>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}

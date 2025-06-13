@@ -1,0 +1,228 @@
+
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Plus, Search, Users, Clock, Calendar, HardHat } from 'lucide-react';
+
+const Workforce = () => {
+  const workers = [
+    {
+      id: 1,
+      name: "John Smith",
+      role: "Site Supervisor",
+      skills: ["Leadership", "Safety", "Concrete"],
+      currentProject: "Downtown Office Complex",
+      status: "On Site",
+      checkInTime: "07:30 AM",
+      hoursToday: 6.5,
+      weeklyHours: 42
+    },
+    {
+      id: 2,
+      name: "Sarah Johnson",
+      role: "Electrician",
+      skills: ["Electrical", "Wiring", "Safety"],
+      currentProject: "Residential Phase 2",
+      status: "On Site",
+      checkInTime: "08:00 AM",
+      hoursToday: 6,
+      weeklyHours: 38
+    },
+    {
+      id: 3,
+      name: "Mike Wilson",
+      role: "Heavy Equipment Operator",
+      skills: ["Crane Operation", "Excavation", "Safety"],
+      currentProject: "Warehouse Extension",
+      status: "Break",
+      checkInTime: "07:45 AM",
+      hoursToday: 5.5,
+      weeklyHours: 35
+    },
+    {
+      id: 4,
+      name: "Lisa Chen",
+      role: "Project Coordinator",
+      skills: ["Planning", "Communication", "Documentation"],
+      currentProject: "School Renovation",
+      status: "Off Duty",
+      checkInTime: "-",
+      hoursToday: 0,
+      weeklyHours: 40
+    }
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'On Site': return 'bg-green-100 text-green-800';
+      case 'Break': return 'bg-yellow-100 text-yellow-800';
+      case 'Off Duty': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
+    <div className="p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger />
+          <div>
+            <h1 className="text-3xl font-bold">Workforce</h1>
+            <p className="text-muted-foreground">Manage crew schedules and time tracking</p>
+          </div>
+        </div>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Worker
+        </Button>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Workers</CardTitle>
+            <Users className="h-5 w-5 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{workers.length}</div>
+            <p className="text-xs text-muted-foreground">Active workforce</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">On Site</CardTitle>
+            <HardHat className="h-5 w-5 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {workers.filter(w => w.status === 'On Site').length}
+            </div>
+            <p className="text-xs text-muted-foreground">Currently working</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Hours Today</CardTitle>
+            <Clock className="h-5 w-5 text-orange-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {workers.reduce((acc, w) => acc + w.hoursToday, 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">Hours logged</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Weekly Hours</CardTitle>
+            <Calendar className="h-5 w-5 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {workers.reduce((acc, w) => acc + w.weeklyHours, 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">This week total</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="flex gap-4 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input placeholder="Search workers..." className="pl-10" />
+        </div>
+        <Button variant="outline">Schedule</Button>
+        <Button variant="outline">Filter</Button>
+      </div>
+
+      {/* Workers List */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {workers.map((worker) => (
+          <Card key={worker.id} className="hover:shadow-md transition-shadow">
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <Users className="h-8 w-8 text-primary" />
+                  <div>
+                    <CardTitle className="text-lg">{worker.name}</CardTitle>
+                    <CardDescription>{worker.role}</CardDescription>
+                  </div>
+                </div>
+                <Badge className={getStatusColor(worker.status)}>
+                  {worker.status}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Skills */}
+                <div>
+                  <p className="text-sm font-medium mb-2">Skills</p>
+                  <div className="flex flex-wrap gap-1">
+                    {worker.skills.map((skill) => (
+                      <Badge key={skill} variant="secondary" className="text-xs">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Current Assignment */}
+                <div>
+                  <p className="text-sm font-medium">Current Project</p>
+                  <p className="text-sm text-muted-foreground">{worker.currentProject}</p>
+                </div>
+
+                {/* Time Info */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="font-medium">Check-in</p>
+                    <p className="text-muted-foreground">{worker.checkInTime}</p>
+                  </div>
+                  <div>
+                    <p className="font-medium">Hours Today</p>
+                    <p className="text-muted-foreground">{worker.hoursToday}h</p>
+                  </div>
+                </div>
+
+                {/* Weekly Progress */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium">Weekly Hours</span>
+                    <span className="text-sm text-muted-foreground">{worker.weeklyHours}/40h</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div 
+                      className="bg-primary h-2 rounded-full transition-all" 
+                      style={{ width: `${(worker.weeklyHours / 40) * 100}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-2">
+                  <Button variant="outline" size="sm" className="flex-1">
+                    View Profile
+                  </Button>
+                  <Button size="sm" className="flex-1">
+                    Schedule
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Workforce;
