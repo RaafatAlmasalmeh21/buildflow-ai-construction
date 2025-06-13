@@ -1,3 +1,4 @@
+
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,29 +20,41 @@ interface TodayTask {
   } | null;
 }
 
-const fetchTodaysTasks = async (userId: string) => {
+// Raw type from Supabase query
+interface RawTaskData {
+  id: string;
+  name: string;
+  status: string;
+  planned_hours: number | null;
+  actual_hours: number | null;
+  sites: {
+    name: string;
+  } | null;
+}
+
+const fetchTodaysTasks = async (userId: string): Promise<TodayTask[]> => {
   const today = new Date().toISOString().split('T')[0];
   
-  const query = supabase
+  const { data: rawData, error } = await supabase
     .from('tasks')
     .select('id, name, status, planned_hours, actual_hours, sites(name)')
     .eq('assignee_id', userId)
     .eq('planned_date', today)
-    .order('created_at', { ascending: true });
-
-  const { data, error } = await query;
+    .order('created_at', { ascending: true })
+    .returns<RawTaskData[]>();
 
   if (error) {
     console.error('Error fetching today\'s tasks:', error);
     throw error;
   }
 
-  if (!data) return [];
+  if (!rawData) return [];
 
-  const tasks: TodayTask[] = data.map((task: any) => ({
+  // Transform the raw data to our TodayTask interface
+  const tasks: TodayTask[] = rawData.map((task) => ({
     id: task.id,
     name: task.name,
-    status: task.status,
+    status: task.status as TodayTask['status'],
     planned_hours: task.planned_hours || 0,
     actual_hours: task.actual_hours || 0,
     sites: task.sites
