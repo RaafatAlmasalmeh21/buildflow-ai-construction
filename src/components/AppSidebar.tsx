@@ -1,3 +1,4 @@
+
 import {
   BarChart3,
   Building2,
@@ -11,7 +12,8 @@ import {
   Home,
   Clock,
   CheckSquare,
-  AlertTriangle
+  AlertTriangle,
+  GraduationCap
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -71,6 +73,12 @@ const menuItems = [
     url: "/timesheet",
     icon: Clock,
     roles: ['worker', 'foreman']
+  },
+  {
+    title: "Training",
+    url: "/training",
+    icon: GraduationCap,
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman', 'worker']
   },
   {
     title: "Workforce",
