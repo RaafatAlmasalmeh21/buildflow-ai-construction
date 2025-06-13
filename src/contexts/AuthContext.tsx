@@ -29,6 +29,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// List of emails that should automatically get admin role
+const ADMIN_EMAILS = [
+  'admin@buildpro.com',
+  'manager@buildpro.com',
+  'director@buildpro.com'
+];
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -108,6 +115,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const assignUserRole = async (userId: string, email: string) => {
+    try {
+      // Determine role based on email
+      const role = ADMIN_EMAILS.includes(email.toLowerCase()) ? 'admin' : 'worker';
+      
+      console.log(`Assigning role ${role} to user ${userId} with email ${email}`);
+      
+      // Insert role into user_roles table
+      const { error } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: userId,
+          role: role
+        });
+
+      if (error) {
+        console.error('Error assigning role:', error);
+        throw error;
+      }
+
+      console.log(`Successfully assigned ${role} role to user`);
+    } catch (error) {
+      console.error('Failed to assign user role:', error);
+      throw error;
+    }
+  };
+
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
@@ -130,7 +164,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -143,6 +177,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
       
       if (error) throw error;
+
+      // If user was created successfully and needs email confirmation,
+      // we'll assign the role when they confirm their email via the database trigger
+      // For now, we'll try to assign the role immediately if the user is created
+      if (data.user && !data.user.email_confirmed_at) {
+        console.log('User created but needs email confirmation');
+        // Role will be assigned via database trigger when user confirms email
+      } else if (data.user) {
+        // User is immediately confirmed, assign role now
+        await assignUserRole(data.user.id, email);
+      }
+      
     } catch (error) {
       console.error('Signup failed:', error);
       throw error;

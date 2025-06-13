@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { HardHat, Loader2 } from 'lucide-react';
+import { HardHat, Loader2, Shield, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
@@ -43,6 +43,11 @@ const Login = () => {
     }
   };
 
+  const handleDemoLogin = (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,72 +58,111 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <HardHat className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-primary">BuildPro</h1>
-          </div>
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>
-            Sign in to access your construction management dashboard
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                required
-              />
+      <div className="w-full max-w-md space-y-6">
+        <Card>
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <HardHat className="h-8 w-8 text-primary" />
+              <h1 className="text-2xl font-bold text-primary">BuildPro</h1>
             </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-              />
+            <CardTitle>Welcome Back</CardTitle>
+            <CardDescription>
+              Sign in to access your construction management dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing In...
+                  </>
+                ) : (
+                  'Sign In'
+                )}
+              </Button>
+            </form>
+            
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted-foreground">
+                Don't have an account?{' '}
+                <Link
+                  to="/signup"
+                  className="text-primary hover:text-primary/80 font-medium"
+                >
+                  Sign up here
+                </Link>
+              </p>
             </div>
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing In...
-                </>
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <Link
-                to="/signup"
-                className="text-primary hover:text-primary/80 font-medium"
+          </CardContent>
+        </Card>
+
+        {/* Demo Accounts */}
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2 text-orange-800">
+              <Shield className="h-4 w-4" />
+              Demo Accounts
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start text-left"
+                onClick={() => handleDemoLogin('admin@buildpro.com', 'demo123')}
               >
-                Sign up here
-              </Link>
+                <Shield className="h-4 w-4 mr-2" />
+                <div className="text-left">
+                  <div className="font-medium">Admin Account</div>
+                  <div className="text-xs text-muted-foreground">admin@buildpro.com</div>
+                </div>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start text-left"
+                onClick={() => handleDemoLogin('worker@buildpro.com', 'demo123')}
+              >
+                <User className="h-4 w-4 mr-2" />
+                <div className="text-left">
+                  <div className="font-medium">Worker Account</div>
+                  <div className="text-xs text-muted-foreground">worker@buildpro.com</div>
+                </div>
+              </Button>
+            </div>
+            
+            <p className="text-xs text-orange-700">
+              Password for all demo accounts: <code className="bg-orange-100 px-1 rounded">demo123</code>
             </p>
-          </div>
-          
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            <p>Demo Credentials:</p>
-            <p>Email: admin@buildpro.com</p>
-            <p>Password: demo123</p>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
