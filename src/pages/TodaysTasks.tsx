@@ -22,12 +22,14 @@ interface TodayTask {
 const fetchTodaysTasks = async (userId: string) => {
   const today = new Date().toISOString().split('T')[0];
   
-  const { data, error } = await supabase
+  const query = supabase
     .from('tasks')
     .select('id, name, status, planned_hours, actual_hours, sites(name)')
     .eq('assignee_id', userId)
     .eq('planned_date', today)
     .order('created_at', { ascending: true });
+
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching today\'s tasks:', error);
