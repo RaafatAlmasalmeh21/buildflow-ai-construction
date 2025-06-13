@@ -22,9 +22,9 @@ interface CompletedTraining {
   completed_at: string;
 }
 
-const fetchTraining = async () => {
+const fetchTraining = async (): Promise<Training[]> => {
   const { data, error } = await supabase
-    .from('training')
+    .from('training' as any)
     .select('*')
     .order('title');
 
@@ -36,9 +36,9 @@ const fetchTraining = async () => {
   return data || [];
 };
 
-const fetchCompletedTraining = async (userId: string) => {
+const fetchCompletedTraining = async (userId: string): Promise<CompletedTraining[]> => {
   const { data, error } = await supabase
-    .from('user_training_completed')
+    .from('user_training_completed' as any)
     .select('training_id, completed_at')
     .eq('user_id', userId);
 
