@@ -24,7 +24,7 @@ interface CompletedTraining {
 
 const fetchTraining = async (): Promise<Training[]> => {
   const { data, error } = await supabase
-    .from('training' as any)
+    .from('training')
     .select('*')
     .order('title');
 
@@ -33,12 +33,12 @@ const fetchTraining = async (): Promise<Training[]> => {
     throw error;
   }
 
-  return data || [];
+  return (data || []) as Training[];
 };
 
 const fetchCompletedTraining = async (userId: string): Promise<CompletedTraining[]> => {
   const { data, error } = await supabase
-    .from('user_training_completed' as any)
+    .from('user_training_completed')
     .select('training_id, completed_at')
     .eq('user_id', userId);
 
@@ -47,7 +47,7 @@ const fetchCompletedTraining = async (userId: string): Promise<CompletedTraining
     throw error;
   }
 
-  return data || [];
+  return (data || []) as CompletedTraining[];
 };
 
 const formatDuration = (minutes: number) => {
