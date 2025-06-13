@@ -19,44 +19,49 @@ interface TodayTask {
   } | null;
 }
 
+const fetchTodaysTasks = async (userId: string): Promise<TodayTask[]> => {
+  const today = new Date().toISOString().split('T')[0];
+  
+  const { data, error } = await supabase
+    .from('tasks')
+    .select(`
+      id,
+      name,
+      status,
+      planned_hours,
+      actual_hours,
+      sites(name)
+    `)
+    .eq('assignee_id', userId)
+    .eq('planned_date', today)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching today\'s tasks:', error);
+    throw error;
+  }
+
+  if (!data) return [];
+
+  return data.map(task => ({
+    id: task.id,
+    name: task.name,
+    status: task.status as TodayTask['status'],
+    planned_hours: task.planned_hours || 0,
+    actual_hours: task.actual_hours || 0,
+    sites: task.sites
+  }));
+};
+
 const TodaysTasks = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: tasks = [], isLoading } = useQuery({
     queryKey: ['todays-tasks', user?.id],
-    queryFn: async (): Promise<TodayTask[]> => {
-      if (!user?.id) return [];
-      
-      const today = new Date().toISOString().split('T')[0];
-      
-      const { data, error } = await supabase
-        .from('tasks')
-        .select(`
-          id,
-          name,
-          status,
-          planned_hours,
-          actual_hours,
-          sites(name)
-        `)
-        .eq('assignee_id', user.id)
-        .eq('planned_date', today)
-        .order('created_at', { ascending: true });
-
-      if (error) {
-        console.error('Error fetching today\'s tasks:', error);
-        throw error;
-      }
-
-      return data?.map(task => ({
-        id: task.id,
-        name: task.name,
-        status: task.status as TodayTask['status'],
-        planned_hours: task.planned_hours || 0,
-        actual_hours: task.actual_hours || 0,
-        sites: task.sites
-      })) || [];
+    queryFn: () => {
+      if (!user?.id) return Promise.resolve([]);
+      return fetchTodaysTasks(user.id);
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5,
