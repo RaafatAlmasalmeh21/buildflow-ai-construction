@@ -45,24 +45,8 @@ export const useEquipment = () => {
 
       if (equipmentError) throw equipmentError;
 
-      // Fetch equipment operators
-      const { data: operators, error: operatorsError } = await supabase
-        .from('equipment_operators')
-        .select(`
-          equipment_id,
-          users!inner(first_name, last_name)
-        `)
-        .eq('is_active', true);
-
-      if (operatorsError) throw operatorsError;
-
       // Process the data
       const equipmentData: EquipmentData[] = equipment.map(item => {
-        const operator = operators?.find(op => op.equipment_id === item.id);
-        const operatorName = operator?.users 
-          ? `${operator.users.first_name} ${operator.users.last_name}` 
-          : undefined;
-
         // Calculate mock hours based on equipment age for demonstration
         const purchaseDate = new Date(item.purchase_date);
         const daysSincePurchase = Math.floor((Date.now() - purchaseDate.getTime()) / (1000 * 60 * 60 * 24));
@@ -88,7 +72,7 @@ export const useEquipment = () => {
           current_value: item.current_value || 0,
           next_service_date: item.next_service_date,
           last_service_date: item.last_service_date,
-          operator: operatorName,
+          operator: undefined, // Will be implemented when operator table exists
           hours_used: mockHoursUsed,
           service_interval: serviceInterval
         };
