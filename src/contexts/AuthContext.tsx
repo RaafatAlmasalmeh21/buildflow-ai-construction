@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,11 +28,9 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Define admin emails - you can update this list as needed
+// Define admin emails
 const ADMIN_EMAILS = [
-  // Add your actual admin emails here, for example:
-  // 'admin@yourcompany.com',
-  // 'manager@yourcompany.com'
+  'raafatmasalmeh999@gmail.com'
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -117,8 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const assignUserRole = async (userId: string, email: string) => {
     try {
-      // Determine role based on email - default to worker for all users
-      // Admins can later change roles through the role management system
+      // Determine role based on email
       const role = ADMIN_EMAILS.includes(email.toLowerCase()) ? 'admin' : 'worker';
       
       console.log(`Assigning role ${role} to user ${userId} with email ${email}`);
