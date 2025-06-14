@@ -35,6 +35,7 @@ interface AddProjectFormData {
 
 export const AddProjectDialog = () => {
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -50,20 +51,40 @@ export const AddProjectDialog = () => {
   });
 
   const onSubmit = async (data: AddProjectFormData) => {
+    console.log('Form submitted with data:', data);
+    
+    if (!data.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Project name is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
     try {
+      const projectData = {
+        name: data.name.trim(),
+        description: data.description.trim() || null,
+        budget: data.budget ? parseFloat(data.budget) : null,
+        start_date: data.start_date || null,
+        end_date: data.end_date || null,
+        status: 'planning',
+        progress_percentage: 0,
+      };
+
+      console.log('Inserting project data:', projectData);
+
       const { error } = await supabase
         .from('projects')
-        .insert({
-          name: data.name,
-          description: data.description,
-          budget: parseFloat(data.budget) || null,
-          start_date: data.start_date || null,
-          end_date: data.end_date || null,
-          status: 'planning',
-          progress_percentage: 0,
-        });
+        .insert(projectData);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       toast({
         title: "Project Created",
@@ -83,6 +104,8 @@ export const AddProjectDialog = () => {
         description: "Failed to create project. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -106,11 +129,12 @@ export const AddProjectDialog = () => {
             <FormField
               control={form.control}
               name="name"
+              rules={{ required: "Project name is required" }}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Project Name *</FormLabel>
                   <FormControl>
-                    <Input placeholder="Office Building Construction" {...field} required />
+                    <Input placeholder="Office Building Construction" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -179,7 +203,9 @@ export const AddProjectDialog = () => {
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Create Project</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Project"}
+              </Button>
             </div>
           </form>
         </Form>
