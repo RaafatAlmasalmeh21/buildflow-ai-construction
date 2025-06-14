@@ -4,55 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Users, Clock, Calendar, HardHat } from 'lucide-react';
+import { Plus, Search, Users, Clock, Calendar, HardHat, Loader2 } from 'lucide-react';
+import { useWorkforce } from '@/hooks/useWorkforce';
+import { useState } from 'react';
 
 const Workforce = () => {
-  const workers = [
-    {
-      id: 1,
-      name: "John Smith",
-      role: "Site Supervisor",
-      skills: ["Leadership", "Safety", "Concrete"],
-      currentProject: "Downtown Office Complex",
-      status: "On Site",
-      checkInTime: "07:30 AM",
-      hoursToday: 6.5,
-      weeklyHours: 42
-    },
-    {
-      id: 2,
-      name: "Sarah Johnson",
-      role: "Electrician",
-      skills: ["Electrical", "Wiring", "Safety"],
-      currentProject: "Residential Phase 2",
-      status: "On Site",
-      checkInTime: "08:00 AM",
-      hoursToday: 6,
-      weeklyHours: 38
-    },
-    {
-      id: 3,
-      name: "Mike Wilson",
-      role: "Heavy Equipment Operator",
-      skills: ["Crane Operation", "Excavation", "Safety"],
-      currentProject: "Warehouse Extension",
-      status: "Break",
-      checkInTime: "07:45 AM",
-      hoursToday: 5.5,
-      weeklyHours: 35
-    },
-    {
-      id: 4,
-      name: "Lisa Chen",
-      role: "Project Coordinator",
-      skills: ["Planning", "Communication", "Documentation"],
-      currentProject: "School Renovation",
-      status: "Off Duty",
-      checkInTime: "-",
-      hoursToday: 0,
-      weeklyHours: 40
-    }
-  ];
+  const { data: workers = [], isLoading, error } = useWorkforce();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredWorkers = workers.filter(worker =>
+    `${worker.first_name} ${worker.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    worker.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    worker.current_project.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -62,6 +26,24 @@ const Workforce = () => {
       default: return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <div className="text-center">
+          <p className="text-destructive">Error loading workforce data: {error.message}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -113,7 +95,7 @@ const Workforce = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {workers.reduce((acc, w) => acc + w.hoursToday, 0)}
+              {workers.reduce((acc, w) => acc + w.hours_today, 0).toFixed(1)}
             </div>
             <p className="text-xs text-muted-foreground">Hours logged</p>
           </CardContent>
@@ -126,7 +108,7 @@ const Workforce = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {workers.reduce((acc, w) => acc + w.weeklyHours, 0)}
+              {workers.reduce((acc, w) => acc + w.weekly_hours, 0).toFixed(1)}
             </div>
             <p className="text-xs text-muted-foreground">This week total</p>
           </CardContent>
@@ -137,7 +119,12 @@ const Workforce = () => {
       <div className="flex gap-4 mb-6">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-          <Input placeholder="Search workers..." className="pl-10" />
+          <Input 
+            placeholder="Search workers..." 
+            className="pl-10" 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <Button variant="outline">Schedule</Button>
         <Button variant="outline">Filter</Button>
@@ -145,14 +132,16 @@ const Workforce = () => {
 
       {/* Workers List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {workers.map((worker) => (
+        {filteredWorkers.map((worker) => (
           <Card key={worker.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
                   <Users className="h-8 w-8 text-primary" />
                   <div>
-                    <CardTitle className="text-lg">{worker.name}</CardTitle>
+                    <CardTitle className="text-lg">
+                      {worker.first_name} {worker.last_name}
+                    </CardTitle>
                     <CardDescription>{worker.role}</CardDescription>
                   </div>
                 </div>
@@ -178,18 +167,18 @@ const Workforce = () => {
                 {/* Current Assignment */}
                 <div>
                   <p className="text-sm font-medium">Current Project</p>
-                  <p className="text-sm text-muted-foreground">{worker.currentProject}</p>
+                  <p className="text-sm text-muted-foreground">{worker.current_project}</p>
                 </div>
 
                 {/* Time Info */}
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="font-medium">Check-in</p>
-                    <p className="text-muted-foreground">{worker.checkInTime}</p>
+                    <p className="text-muted-foreground">{worker.check_in_time}</p>
                   </div>
                   <div>
                     <p className="font-medium">Hours Today</p>
-                    <p className="text-muted-foreground">{worker.hoursToday}h</p>
+                    <p className="text-muted-foreground">{worker.hours_today}h</p>
                   </div>
                 </div>
 
@@ -197,12 +186,12 @@ const Workforce = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium">Weekly Hours</span>
-                    <span className="text-sm text-muted-foreground">{worker.weeklyHours}/40h</span>
+                    <span className="text-sm text-muted-foreground">{worker.weekly_hours}/40h</span>
                   </div>
                   <div className="w-full bg-muted rounded-full h-2">
                     <div 
                       className="bg-primary h-2 rounded-full transition-all" 
-                      style={{ width: `${(worker.weeklyHours / 40) * 100}%` }}
+                      style={{ width: `${Math.min((worker.weekly_hours / 40) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
@@ -221,6 +210,12 @@ const Workforce = () => {
           </Card>
         ))}
       </div>
+
+      {filteredWorkers.length === 0 && !isLoading && (
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">No workers found matching your search.</p>
+        </div>
+      )}
     </div>
   );
 };
