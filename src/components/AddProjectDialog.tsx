@@ -91,8 +91,8 @@ export const AddProjectDialog = () => {
         description: "New project has been successfully created.",
       });
 
-      // Refresh the projects list
-      queryClient.invalidateQueries({ queryKey: ['projects', user?.id] });
+      // Refresh the projects list - invalidate all projects queries
+      await queryClient.invalidateQueries({ queryKey: ['projects'] });
       
       // Reset form and close dialog
       form.reset();
