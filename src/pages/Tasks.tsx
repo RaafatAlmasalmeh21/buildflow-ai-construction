@@ -2,6 +2,7 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { AddTaskDialog } from '@/components/AddTaskDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Search, ClipboardList, Calendar, User } from 'lucide-react';
@@ -102,10 +103,7 @@ const Tasks = () => {
             <p className="text-muted-foreground">Manage work assignments and progress</p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New Task
-        </Button>
+        <AddTaskDialog />
       </div>
 
       {/* Search and Filters */}
@@ -187,10 +185,7 @@ const Tasks = () => {
           <ClipboardList className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <h3 className="text-lg font-medium mb-2">No tasks found</h3>
           <p className="text-muted-foreground mb-4">Get started by creating your first task</p>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Task
-          </Button>
+          <AddTaskDialog />
         </div>
       )}
 
