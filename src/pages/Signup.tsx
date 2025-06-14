@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
-import { Building2, AlertCircle, Shield, Users } from 'lucide-react';
+import { Building2, AlertCircle, Users } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Signup = () => {
@@ -43,19 +43,10 @@ const Signup = () => {
     }
   };
 
-  const isAdminEmail = (email: string) => {
-    const adminEmails = ['admin@buildpro.com', 'manager@buildpro.com', 'director@buildpro.com'];
-    return adminEmails.includes(email.toLowerCase());
-  };
-
   const validateEmail = (email: string) => {
-    // Custom email validation that handles our admin emails
     if (!email) return 'Email is required';
     
-    // Check if it's one of our admin emails (which we know are valid)
-    if (isAdminEmail(email)) return '';
-    
-    // For other emails, use a simple regex validation
+    // Simple email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return 'Please enter a valid email address';
@@ -69,7 +60,7 @@ const Signup = () => {
     setError('');
     setSuccess('');
 
-    // Custom validation
+    // Validation
     const emailError = validateEmail(formData.email);
     if (emailError) {
       setError(emailError);
@@ -96,8 +87,7 @@ const Signup = () => {
         formData.lastName
       );
       
-      const roleType = isAdminEmail(formData.email) ? 'Administrator' : 'Worker';
-      setSuccess(`Account created successfully! You will be assigned the ${roleType} role. Please check your email to verify your account.`);
+      setSuccess('Account created successfully! You will be assigned the Worker role by default. Please check your email to verify your account.');
       setFormData({
         email: '',
         password: '',
@@ -162,18 +152,11 @@ const Signup = () => {
             {/* Role Information */}
             <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
               <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
-                <Shield className="h-4 w-4" />
-                Automatic Role Assignment
+                <Users className="h-4 w-4" />
+                User Roles
               </h4>
-              <div className="text-sm text-blue-800 space-y-1">
-                <p className="flex items-center gap-2">
-                  <Shield className="h-3 w-3" />
-                  Admin emails get Administrator role
-                </p>
-                <p className="flex items-center gap-2">
-                  <Users className="h-3 w-3" />
-                  Other emails get Worker role (can be upgraded by admin)
-                </p>
+              <div className="text-sm text-blue-800">
+                <p>All new users start with the Worker role. Administrators can upgrade your role later if needed.</p>
               </div>
             </div>
 
@@ -218,12 +201,6 @@ const Signup = () => {
                   placeholder="john@example.com"
                   autoComplete="email"
                 />
-                {formData.email && isAdminEmail(formData.email) && (
-                  <p className="text-sm text-green-600 mt-1 flex items-center gap-1">
-                    <Shield className="h-3 w-3" />
-                    This email will receive Administrator role
-                  </p>
-                )}
               </div>
 
               <div>
@@ -277,16 +254,6 @@ const Signup = () => {
                 </Link>
               </p>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Admin Email Hint */}
-        <Card className="border-green-200 bg-green-50">
-          <CardContent className="pt-6">
-            <p className="text-sm text-green-800 text-center">
-              <Shield className="h-4 w-4 inline mr-1" />
-              Want admin access? Use admin@buildpro.com, manager@buildpro.com, or director@buildpro.com
-            </p>
           </CardContent>
         </Card>
       </div>

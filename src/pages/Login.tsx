@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { HardHat, Loader2, Shield, User, AlertTriangle } from 'lucide-react';
+import { HardHat, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
@@ -55,11 +55,6 @@ const Login = () => {
     }
   };
 
-  const handleDemoLogin = (demoEmail: string, demoPassword: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-  };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -70,7 +65,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md">
         <Card>
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-2 mb-4">
@@ -128,64 +123,6 @@ const Login = () => {
                   Sign up here
                 </Link>
               </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Demo Accounts */}
-        <Card className="border-orange-200 bg-orange-50">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2 text-orange-800">
-              <AlertTriangle className="h-4 w-4" />
-              Demo Accounts - Sign Up Required
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="mb-3 p-3 bg-orange-100 rounded-md">
-              <p className="text-xs text-orange-800 font-medium mb-1">
-                ⚠️ Important: Demo accounts must be created first!
-              </p>
-              <p className="text-xs text-orange-700">
-                Before logging in, you need to sign up with these demo emails.
-              </p>
-            </div>
-            
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start text-left"
-                onClick={() => handleDemoLogin('admin@buildpro.com', 'demo123')}
-              >
-                <Shield className="h-4 w-4 mr-2" />
-                <div className="text-left">
-                  <div className="font-medium">Admin Account</div>
-                  <div className="text-xs text-muted-foreground">admin@buildpro.com</div>
-                </div>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full justify-start text-left"
-                onClick={() => handleDemoLogin('worker@buildpro.com', 'demo123')}
-              >
-                <User className="h-4 w-4 mr-2" />
-                <div className="text-left">
-                  <div className="font-medium">Worker Account</div>
-                  <div className="text-xs text-muted-foreground">worker@buildpro.com</div>
-                </div>
-              </Button>
-            </div>
-            
-            <div className="text-xs text-orange-700 space-y-1">
-              <p>Password: <code className="bg-orange-100 px-1 rounded">demo123</code></p>
-              <p className="font-medium">Steps to use demo accounts:</p>
-              <ol className="list-decimal list-inside space-y-1 ml-2">
-                <li>Click "Sign up here" above</li>
-                <li>Create account with demo email</li>
-                <li>Return here to sign in</li>
-              </ol>
             </div>
           </CardContent>
         </Card>

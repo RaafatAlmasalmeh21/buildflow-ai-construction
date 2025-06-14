@@ -29,11 +29,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// List of emails that should automatically get admin role
+// Define admin emails - you can update this list as needed
 const ADMIN_EMAILS = [
-  'admin@buildpro.com',
-  'manager@buildpro.com',
-  'director@buildpro.com'
+  // Add your actual admin emails here, for example:
+  // 'admin@yourcompany.com',
+  // 'manager@yourcompany.com'
 ];
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -117,7 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const assignUserRole = async (userId: string, email: string) => {
     try {
-      // Determine role based on email
+      // Determine role based on email - default to worker for all users
+      // Admins can later change roles through the role management system
       const role = ADMIN_EMAILS.includes(email.toLowerCase()) ? 'admin' : 'worker';
       
       console.log(`Assigning role ${role} to user ${userId} with email ${email}`);
