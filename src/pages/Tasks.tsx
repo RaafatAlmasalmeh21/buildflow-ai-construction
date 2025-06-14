@@ -5,81 +5,91 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Search, ClipboardList, Calendar, User } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const Tasks = () => {
-  const tasks = [
-    {
-      id: 1,
-      name: "Foundation Pour - Section C",
-      project: "Downtown Office Complex",
-      site: "Main Building",
-      assignee: "Team Alpha",
-      priority: "High",
-      status: "In Progress",
-      dueDate: "2024-12-15",
-      progress: 60,
-      estimatedHours: 40,
-      actualHours: 24
-    },
-    {
-      id: 2,
-      name: "Steel Frame Installation",
-      project: "Downtown Office Complex",
-      site: "Main Building",
-      assignee: "Team Beta",
-      priority: "Medium",
-      status: "Pending",
-      dueDate: "2024-12-20",
-      progress: 0,
-      estimatedHours: 80,
-      actualHours: 0
-    },
-    {
-      id: 3,
-      name: "Electrical Rough-in",
-      project: "Residential Phase 2",
-      site: "Block A",
-      assignee: "Team Gamma",
-      priority: "Low",
-      status: "Planned",
-      dueDate: "2024-12-25",
-      progress: 0,
-      estimatedHours: 60,
-      actualHours: 0
-    },
-    {
-      id: 4,
-      name: "Plumbing Installation",
-      project: "Warehouse Extension",
-      site: "Main Site",
-      assignee: "Team Delta",
-      priority: "High",
-      status: "In Progress",
-      dueDate: "2024-12-18",
-      progress: 85,
-      estimatedHours: 50,
-      actualHours: 42
+  const navigate = useNavigate();
+
+  const { data: tasks = [], isLoading } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select(`
+          id,
+          name,
+          description,
+          status,
+          priority,
+          planned_hours,
+          actual_hours,
+          planned_start_date,
+          planned_end_date,
+          progress_percentage,
+          sites(
+            name,
+            projects(name)
+          )
+        `)
+        .neq('deleted_at', null)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching tasks:', error);
+        throw error;
+      }
+
+      return data || [];
     }
-  ];
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'In Progress': return 'bg-blue-100 text-blue-800';
-      case 'Pending': return 'bg-yellow-100 text-yellow-800';
-      case 'Planned': return 'bg-gray-100 text-gray-800';
-      case 'Completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'not_started': return 'bg-gray-100 text-gray-800';
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'on_hold': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'High': return 'bg-red-100 text-red-800';
-      case 'Medium': return 'bg-orange-100 text-orange-800';
-      case 'Low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const getPriorityColor = (priority: number) => {
+    if (priority >= 4) return 'bg-red-100 text-red-800'; // High
+    if (priority >= 3) return 'bg-orange-100 text-orange-800'; // Medium
+    return 'bg-green-100 text-green-800'; // Low
   };
+
+  const getPriorityLabel = (priority: number) => {
+    if (priority >= 4) return 'High';
+    if (priority >= 3) return 'Medium';
+    return 'Low';
+  };
+
+  const formatStatus = (status: string) => {
+    return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    navigate(`/tasks/${taskId}`);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <SidebarTrigger />
+            <div>
+              <h1 className="text-3xl font-bold">Tasks</h1>
+              <p className="text-muted-foreground">Loading tasks...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -112,7 +122,11 @@ const Tasks = () => {
       {/* Tasks List */}
       <div className="space-y-4">
         {tasks.map((task) => (
-          <Card key={task.id} className="hover:shadow-md transition-shadow">
+          <Card 
+            key={task.id} 
+            className="hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => handleTaskClick(task.id)}
+          >
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -120,17 +134,17 @@ const Tasks = () => {
                     <ClipboardList className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-semibold">{task.name}</h3>
                     <Badge className={getStatusColor(task.status)}>
-                      {task.status}
+                      {formatStatus(task.status)}
                     </Badge>
                     <Badge className={getPriorityColor(task.priority)}>
-                      {task.priority}
+                      {getPriorityLabel(task.priority)}
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {task.project} • {task.site}
+                    {task.sites?.projects?.name} • {task.sites?.name}
                   </p>
                 </div>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" onClick={(e) => e.stopPropagation()}>
                   View Details
                 </Button>
               </div>
@@ -138,19 +152,21 @@ const Tasks = () => {
               <div className="grid md:grid-cols-4 gap-4 mb-4">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">{task.assignee}</span>
+                  <span className="text-sm">Unassigned</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm">Due: {new Date(task.dueDate).toLocaleDateString()}</span>
+                  <span className="text-sm">
+                    Due: {task.planned_end_date ? new Date(task.planned_end_date).toLocaleDateString() : 'No date set'}
+                  </span>
                 </div>
                 <div className="text-sm">
                   <span className="text-muted-foreground">Hours: </span>
-                  {task.actualHours}/{task.estimatedHours}
+                  {task.actual_hours || 0}/{task.planned_hours || 0}
                 </div>
                 <div className="text-sm">
                   <span className="text-muted-foreground">Progress: </span>
-                  {task.progress}%
+                  {task.progress_percentage || 0}%
                 </div>
               </div>
 
@@ -158,13 +174,25 @@ const Tasks = () => {
               <div className="w-full bg-muted rounded-full h-2">
                 <div 
                   className="bg-primary h-2 rounded-full transition-all" 
-                  style={{ width: `${task.progress}%` }}
+                  style={{ width: `${task.progress_percentage || 0}%` }}
                 />
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {tasks.length === 0 && (
+        <div className="text-center py-12">
+          <ClipboardList className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg font-medium mb-2">No tasks found</h3>
+          <p className="text-muted-foreground mb-4">Get started by creating your first task</p>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Create Task
+          </Button>
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
@@ -183,7 +211,7 @@ const Tasks = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {tasks.filter(t => t.status === 'In Progress').length}
+              {tasks.filter(t => t.status === 'in_progress').length}
             </div>
           </CardContent>
         </Card>
@@ -194,7 +222,7 @@ const Tasks = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {tasks.filter(t => t.priority === 'High').length}
+              {tasks.filter(t => t.priority >= 4).length}
             </div>
           </CardContent>
         </Card>
@@ -205,7 +233,7 @@ const Tasks = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {Math.round(tasks.reduce((acc, t) => acc + t.progress, 0) / tasks.length)}%
+              {tasks.length > 0 ? Math.round(tasks.reduce((acc, t) => acc + (t.progress_percentage || 0), 0) / tasks.length) : 0}%
             </div>
           </CardContent>
         </Card>
