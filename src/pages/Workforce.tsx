@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Users, Clock, Calendar, HardHat, Loader2 } from 'lucide-react';
+import { Search, Users, Clock, Calendar, HardHat, Loader2 } from 'lucide-react';
+import AddWorkerDialog from '@/components/AddWorkerDialog';
 import { useWorkforce } from '@/hooks/useWorkforce';
 import { useState } from 'react';
 
@@ -56,10 +57,7 @@ const Workforce = () => {
             <p className="text-muted-foreground">Manage crew schedules and time tracking</p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Worker
-        </Button>
+        <AddWorkerDialog />
       </div>
 
       {/* Quick Stats */}
