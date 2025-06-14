@@ -1,7 +1,8 @@
 
 -- Enable necessary extensions
+CREATE SCHEMA IF NOT EXISTS extensions;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "postgis";
+CREATE EXTENSION IF NOT EXISTS "postgis" WITH SCHEMA extensions;
 
 -- Create enums
 CREATE TYPE public.app_role AS ENUM ('admin', 'project_manager', 'site_supervisor', 'foreman', 'worker', 'client');
