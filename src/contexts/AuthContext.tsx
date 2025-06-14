@@ -48,9 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile data
+          // Fetch user profile data and check admin status
           setTimeout(async () => {
             await fetchUserProfile(session.user.id);
+            await checkAndUpdateAdminRole(session.user.id, session.user.email || '');
           }, 0);
         } else {
           setProfile(null);
@@ -66,12 +67,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchUserProfile(session.user.id);
+        checkAndUpdateAdminRole(session.user.id, session.user.email || '');
       }
       setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const checkAndUpdateAdminRole = async (userId: string, email: string) => {
+    try {
+      // Check if email should be admin
+      const shouldBeAdmin = ADMIN_EMAILS.includes(email.toLowerCase());
+      
+      if (!shouldBeAdmin) return;
+
+      // Get current role
+      const { data: currentRole, error: roleError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .single();
+
+      if (roleError) {
+        console.error('Error checking current role:', roleError);
+        return;
+      }
+
+      // If user should be admin but isn't, update their role
+      if (currentRole?.role !== 'admin') {
+        console.log(`Updating role for admin email ${email} from ${currentRole?.role} to admin`);
+        
+        // Delete existing role
+        await supabase
+          .from('user_roles')
+          .delete()
+          .eq('user_id', userId);
+
+        // Insert admin role
+        const { error: updateError } = await supabase
+          .from('user_roles')
+          .insert({
+            user_id: userId,
+            role: 'admin'
+          });
+
+        if (updateError) {
+          console.error('Error updating to admin role:', updateError);
+        } else {
+          console.log(`Successfully updated ${email} to admin role`);
+          // Refresh profile to get updated role
+          await fetchUserProfile(userId);
+        }
+      }
+    } catch (error) {
+      console.error('Error in checkAndUpdateAdminRole:', error);
+    }
+  };
 
   const fetchUserProfile = async (userId: string) => {
     try {
