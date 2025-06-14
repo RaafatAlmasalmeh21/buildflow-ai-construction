@@ -84,7 +84,7 @@ const menuItems = [
     title: "Workforce",
     url: "/workforce",
     icon: Users,
-    roles: ['admin', 'project_manager', 'site_supervisor']
+    roles: ['admin', 'project_manager', 'site_supervisor', 'foreman', 'worker']
   },
   {
     title: "Equipment",
