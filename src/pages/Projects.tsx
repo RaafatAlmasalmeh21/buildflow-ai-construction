@@ -1,15 +1,15 @@
-
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Building2, Calendar, DollarSign } from 'lucide-react';
+import { Search, Building2, Calendar, DollarSign } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { AddProjectDialog } from '@/components/AddProjectDialog';
 
 const Projects = () => {
   const { user, isLoading: authLoading } = useAuth();
@@ -103,10 +103,7 @@ const Projects = () => {
             <p className="text-muted-foreground">Manage all construction projects</p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          New Project
-        </Button>
+        <AddProjectDialog />
       </div>
 
       {/* Search and Filters */}
@@ -223,10 +220,7 @@ const Projects = () => {
             <p className="text-muted-foreground text-center mb-4">
               {searchTerm ? 'No projects match your search criteria.' : 'Get started by creating your first project.'}
             </p>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Project
-            </Button>
+            <AddProjectDialog />
           </CardContent>
         </Card>
       )}
