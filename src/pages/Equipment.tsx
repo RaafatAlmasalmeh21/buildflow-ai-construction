@@ -1,12 +1,12 @@
-
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Wrench, Calendar, AlertTriangle, Settings, Loader2 } from 'lucide-react';
+import { Search, Wrench, Calendar, AlertTriangle, Settings, Loader2 } from 'lucide-react';
 import { useEquipment } from '@/hooks/useEquipment';
 import { useState } from 'react';
+import { AddEquipmentDialog } from '@/components/AddEquipmentDialog';
 
 const Equipment = () => {
   const { data: equipment = [], isLoading, error } = useEquipment();
@@ -81,10 +81,7 @@ const Equipment = () => {
             <p className="text-muted-foreground">Track machinery, tools, and maintenance schedules</p>
           </div>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Equipment
-        </Button>
+        <AddEquipmentDialog />
       </div>
 
       {/* Quick Stats */}
