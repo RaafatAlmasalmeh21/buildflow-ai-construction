@@ -3,10 +3,12 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { PlayCircle, Clock, CheckCircle } from 'lucide-react';
+import { PlayCircle, Clock, CheckCircle, Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
+import VideoUploadModal from '@/components/VideoUploadModal';
 
 interface Training {
   id: string;
@@ -60,9 +62,10 @@ const formatDuration = (minutes: number) => {
 };
 
 const Training = () => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const { data: training = [], isLoading: trainingLoading } = useQuery({
+  const { data: training = [], isLoading: trainingLoading, refetch } = useQuery({
     queryKey: ['training'],
     queryFn: fetchTraining,
   });
@@ -84,6 +87,12 @@ const Training = () => {
     window.open(videoUrl, '_blank');
   };
 
+  const handleUploadSuccess = () => {
+    refetch();
+  };
+
+  const isAdmin = profile?.role === 'admin' || profile?.role === 'project_manager';
+
   if (trainingLoading || completedLoading) {
     return (
       <div className="p-6">
@@ -103,14 +112,23 @@ const Training = () => {
   return (
     <div className="p-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <SidebarTrigger />
-        <div>
-          <h1 className="text-3xl font-bold">Micro-Training</h1>
-          <p className="text-muted-foreground">
-            Complete required training modules for your tasks
-          </p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <SidebarTrigger />
+          <div>
+            <h1 className="text-3xl font-bold">Micro-Training</h1>
+            <p className="text-muted-foreground">
+              Complete required training modules for your tasks
+            </p>
+          </div>
         </div>
+        
+        {isAdmin && (
+          <Button onClick={() => setIsUploadModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Upload Video
+          </Button>
+        )}
       </div>
 
       {/* Summary Cards */}
@@ -158,6 +176,15 @@ const Training = () => {
             <div className="text-center py-8 text-muted-foreground">
               <PlayCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No training modules available</p>
+              {isAdmin && (
+                <Button 
+                  onClick={() => setIsUploadModalOpen(true)}
+                  className="mt-4"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Upload First Video
+                </Button>
+              )}
             </div>
           ) : (
             <div className="grid gap-4">
@@ -209,6 +236,12 @@ const Training = () => {
           )}
         </CardContent>
       </Card>
+
+      <VideoUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={handleUploadSuccess}
+      />
     </div>
   );
 };
