@@ -92,7 +92,7 @@ export const AddProjectDialog = () => {
       });
 
       // Refresh the projects list - invalidate all projects queries
-      await queryClient.invalidateQueries({ queryKey: ['projects'] });
+      await queryClient.invalidateQueries({ queryKey: ['projects', user?.id] });
       
       // Reset form and close dialog
       form.reset();
